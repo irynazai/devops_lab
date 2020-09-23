@@ -53,7 +53,6 @@ def parse_input():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", help="Interval between snapshots", type=int, default=30)
     parser.add_argument("-t", help="Output file type", default="txt")
-    args = parser.parse_args()
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit()
@@ -82,20 +81,20 @@ def create_snapshots(arg):
         if arg.t == "json":
             headers = ['cpu_average_used', 'cpu_percent_used', 'memory_used', 'memory_percent_used']
             snap = MySnapshot()
-            check_exist_folder(os.path.join(path, filename+'.json'))
+            check_exist_folder(os.path.join(path, filename + '.json'))
             k = 0
             for i in headers:
                 for n in data:
                     snap[current][headers[k]] = str(n[k])
                 k += 1
-            with open(os.path.join(path, filename+'.json'), 'a', newline='\n') as f:
+            with open(os.path.join(path, filename + '.json'), 'a', newline='\n') as f:
                 json.dump(snap, f, indent=2)
                 f.write('\n')
                 snap.clear()
 
         if arg.t == "txt":
-            check_exist_folder(os.path.join(path, filename+'.txt'))
-            with open(os.path.join(path, filename+'.txt'), 'a') as f:
+            check_exist_folder(os.path.join(path, filename + '.txt'))
+            with open(os.path.join(path, filename + '.txt'), 'a') as f:
                 f.write(current + ':\n')
                 f.write(columnar(data, headers, no_borders=False))
                 f.write('\n')
