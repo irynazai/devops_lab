@@ -1,0 +1,14 @@
+NameVirtualHost {% if namevirtualhost %}{{ namevirtualhost }}{% else %}{{ "*" }}{% endif %}:{% if virtualport %}{{ virtualport }}{% else %}{{ "80" }}{% endif %}
+{% for vhost in vhosts %}
+<VirtualHost {% if vhost.listenaddress %}{{ vhost.listenaddress }}{% else %}{{ "*" }}{% endif %}:{% if vhost.port %}{{ vhost.port }}{% else %}{{ "80" }}{% endif %}>
+  ServerName {% if vhost.servername %}{{ vhost.servername }}{% else %}{{ "www.domain.tld" }}{% endif %}
+  DocumentRoot {% if vhost.documentroot %}{{ vhost.documentroot }}{% else %}{{ "/www/domain" }}{% endif %}
+  ServerAdmin {% if vhost.serveradmin %}{{ vhost.serveradmin }}{% else %}{{ "www-admin@foo.example.com" }}{% endif %}
+  <Directory "{% if vhost.directorypath %}{{ vhost.directorypath }}{% else %}{{ "/usr/local/httpd/htdocs" }}{% endif %}">
+     AllowOverride All
+     Options Indexes FollowSymLinks
+     Order allow,deny
+     Allow from all
+  </Directory>
+</VirtualHost>
+{% endfor %}
