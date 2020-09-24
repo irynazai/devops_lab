@@ -5,7 +5,7 @@ def if_positive(func):
         else:
             m = func(n)
             if m > 0:
-                for i in range(0, m):
+                for i in range(m):
                     print(i ** 2)
             elif m == 0:
                 print(0)
@@ -25,5 +25,5 @@ def if_number(n):
         return result
 
 
-N = input('Input please non-negative number N:\n')
+N = input()
 if_number(N)
