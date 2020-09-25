@@ -4,10 +4,8 @@
 *Using this script you can launch a web application and request pull requests from the github repository.. You can choose between "open" and "closed" pull requests, or pull requests marked with a label "accepted" or "need work".*
 
 # Requirements:
-*Please add your credentials in "./flask/handlers/pulls.py" file in function get_pulls(): 
-<br>auth=('your_github_user_name', 'your_github_password'))*
-
-<br>*If you exceed the number of requests from one IP, then access to receiving pull requests will not be available.*
+*Please add your credentials in "./flask/handlers/pulls.py" file in function get_pulls(): auth=('your_github_user_name', 'your_github_password'))*
+*If you exceed the number of requests from one IP, then access to receiving pull requests will not be available.*
 
 
 *You need to install next packages. Run command:*
