@@ -54,7 +54,8 @@ def get_json_response(response, state):
 
     for i in json_page:
         if state is None:
-            p.append({"num": i["number"], "link": i["html_url"], "title": i["title"]})
+            if json_page[0]["state"] == "open" or json_page[0]["state"] == "closed":
+                p.append({"num": i["number"], "link": i["html_url"], "title": i["title"]})
         if json_page[0]["state"] == state:
             p.append({"num": i["number"], "link": i["html_url"], "title": i["title"]})
         else:
