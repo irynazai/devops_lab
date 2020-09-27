@@ -70,22 +70,33 @@ def get_json_response(response, state):
     for i in json_page:
         if state is None:
             if json_page[0]["state"] == 'open' or json_page[0]["state"] == 'closed':
-                t = {"num": i["number"], "link": i["html_url"], "title": i["title"], "state": json_page[0]["state"]}
+                t = {"num": i["number"],
+                     "link": i["html_url"],
+                     "title": i["title"],
+                     "state": json_page[0]["state"]}
                 p.append(t)
         elif json_page[0]["state"] == state:
-            t = {"num": i["number"], "link": i["html_url"], "title": i["title"], "state": str(json_page[0]["state"])}
+            t = {"num": i["number"],
+                 "link": i["html_url"],
+                 "title": i["title"],
+                 "state": str(json_page[0]["state"])}
             p.append(t)
         else:
             for k in i["labels"]:
                 if k.get("name") == state:
-                    t = {"num": i["number"], "link": i["html_url"], "title": i["title"], "labels": [{"name": state}]}
+                    t = {"num": i["number"],
+                         "link": i["html_url"],
+                         "title": i["title"],
+                         "labels": [{"name": state}]}
                     p.append(t)
     return p
 
 
 def get_pulls(state):
     if state == 'open' or state == 'closed':
-        response = requests.get(url, params={'per_page': '100', 'state': state}, auth=(login, passwd))
+        response = requests.get(url, params={'per_page': '100',
+                                             'state': state}, auth=(login, passwd))
     else:
-        response = requests.get(url, params={'per_page': '100', 'state': 'all'}, auth=(login, passwd))
+        response = requests.get(url, params={'per_page': '100',
+                                             'state': 'all'}, auth=(login, passwd))
     return get_json_response(response, state)
