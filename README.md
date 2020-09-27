@@ -5,8 +5,8 @@
 *The app has 83% unit test coverage.*
 
 #### Requirements:
-*Please add your credentials such as "login" and "passwd" in "./flask/handlers/pulls.py" and in "./flask/test/test_pulls.py" if you need.*
-*Attention: if you exceed the number of requests from one IP, then access to receiving pull requests will not be available.*
+*Please add your credentials such as "login" and "passwd" in "./flask/handlers/pulls.py" and in "./flask/test/variables.py" if you need.*
+<br><b>Attention:</b> if you exceed the number of requests from one IP, then access to receiving pull requests will not be available.
 
 
 *You need to install next packages. Run command:*
