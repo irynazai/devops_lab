@@ -4,18 +4,27 @@ import os
 import errno
 import datetime
 
+# Enter your github login and password here:
+login = ''
+passwd = ''
+
+# Enter url for api request
+url = 'https://api.github.com/repos/alenaPy/devops_lab/pulls'
+
+# Enter directory for saving json files
 path = '/tmp/json_files/'
 now = datetime.datetime.now()
-filename = 'jsonT_' + str(now.strftime("%Y-%m-%d_%H:%M:%S"))
+filename = 'json' + str(now.strftime("%Y-%m-%d_%H:%M:%S"))
 
 
-def check_exist_folder(filename):
-    if not os.path.exists(os.path.dirname(filename)):
+def check_exist_folder(my_path):
+    if not os.path.exists(os.path.dirname(my_path)):
         try:
-            os.makedirs(os.path.dirname(filename))
-        except OSError as exc:  # Guard against race condition
+            os.makedirs(os.path.dirname(my_path))
+        except OSError as exc:
             if exc.errno != errno.EEXIST:
                 raise
+    return os.path.exists(os.path.dirname(my_path))
 
 
 def status_page(func):
@@ -40,32 +49,43 @@ def status_page(func):
     return wrapper
 
 
+def create_json_file(response):
+    check_exist_folder(path)
+    with open(os.path.join(path, filename + '.json'), 'w', newline='\n') as f:
+        json.dump(response.json(), f, indent=2)
+    return f.name
+
+
+def load_from_json_to_list():
+    with open(os.path.join(path, filename + '.json')) as f:
+        json_page = json.load(f)
+    return json_page
+
+
 @status_page
 def get_json_response(response, state):
     p = []
-    json_page = []
-    check_exist_folder(os.path.join(path, filename + '.json'))
-
-    with open(os.path.join(path, filename + '.json'), 'w', newline='\n') as f:
-        json.dump(response.json(), f, indent=2)
-
-    with open(os.path.join(path, filename + '.json')) as f:
-        json_page = json.load(f)
-
+    create_json_file(response)
+    json_page = load_from_json_to_list()
     for i in json_page:
         if state is None:
-            if json_page[0]["state"] == "open" or json_page[0]["state"] == "closed":
-                p.append({"num": i["number"], "link": i["html_url"], "title": i["title"]})
-        if json_page[0]["state"] == state:
-            p.append({"num": i["number"], "link": i["html_url"], "title": i["title"]})
+            if json_page[0]["state"] == 'open' or json_page[0]["state"] == 'closed':
+                t = {"num": i["number"], "link": i["html_url"], "title": i["title"], "state": json_page[0]["state"]}
+                p.append(t)
+        elif json_page[0]["state"] == state:
+            t = {"num": i["number"], "link": i["html_url"], "title": i["title"], "state": str(json_page[0]["state"])}
+            p.append(t)
         else:
             for k in i["labels"]:
                 if k.get("name") == state:
-                    p.append({"num": i["number"], "link": i["html_url"], "title": i["title"]})
+                    t = {"num": i["number"], "link": i["html_url"], "title": i["title"], "labels": [{"name": state}]}
+                    p.append(t)
     return p
 
 
 def get_pulls(state):
-    response = requests.get('https://api.github.com/repos/alenaPy/devops_lab/pulls',
-                            auth=('', ''))
+    if state == 'open' or state == 'closed':
+        response = requests.get(url, params={'per_page': '100', 'state': state}, auth=(login, passwd))
+    else:
+        response = requests.get(url, params={'per_page': '100', 'state': 'all'}, auth=(login, passwd))
     return get_json_response(response, state)
