@@ -13,19 +13,19 @@ class Error(Exception):
     pass
 
 
-def check_exist_folder(path):
-    if not os.path.exists(os.path.dirname(path)):
+def check_exist_folder(tpath):
+    if not os.path.exists(os.path.dirname(tpath)):
         try:
-            os.makedirs(os.path.dirname(path))
-            logger.info('Create %s', path)
+            os.makedirs(os.path.dirname(tpath))
+            logger.info('Create %s', tpath)
         except OSError as exc:
             if exc.errno != errno.EEXIST:
-                logger.error('Directory %s can\'t be created', path)
+                logger.error('Directory %s can\'t be created', tpath)
                 raise
 
 
 def archive(current_path, destination):
-    dest = destination.with_name(destination.name + '.zip')
+    dest = destination.with_name(destination.name[:-4] + '_new.zip')
     if dest == current_path:
         raise Error(f'input: {dest} equal output.')
     elif dest.exists():
@@ -36,7 +36,7 @@ def archive(current_path, destination):
         for f in _iteration(current_path):
             with f.open('rb') as b:
                 data = b.read()
-            p = str(f.relative_to(current_path.parent))
+            p = str(f.relative_to(current_path))
             logger.info('Add %s', p)
             zipf.writestr(p, data)
 
@@ -82,21 +82,18 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('zip', help="Name/s of zip file/s separated by space", type=Path, nargs='+')
     args = parser.parse_args()
-    temp_path = '/tmp'
+    temp_path = '/tmp/izai_test'
 
     for z in args.zip:
         try:
             unzip(z, temp_path)
         except Error as e:
             logger.warning(f'{e} skipped.')
-
-        unzip_path = temp_path + '/' + str(z.with_name(z.name))[:-4]
-        delete_dir_without_initfile(temp_path + '/' + str(z.with_name(z.name))[:-4])
+        delete_dir_without_initfile(temp_path)
 
     for p in args.zip:
-        unzip_path = temp_path + '/' + str(p.with_name(p.name))[:-4]
         try:
-            archive(Path(unzip_path), p)
+            archive(Path(temp_path), p)
         except Error as e:
             logger.warning(f'{e} skipped.')
 
